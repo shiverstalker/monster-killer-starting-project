@@ -21,13 +21,13 @@ function writeToLog(event, value, monsterHealth, playerHealth) {
     let logEntry = {
         event: event,
         value: value,
-        finalMonsterHealth = monsterHealth,
-        finalPlayerHealth = playerHealth
+        finalMonsterHealth: monsterHealth,
+        finalPlayerHealth: playerHealth
     };
-    if (event === LOG_EVENT_PLAYERR_ATTACK) {
+    if (event === LOG_EVENT_PLAYER_ATTACK) {
         logEntry.target = 'MONSTER';
 
-    } else if (event === LOG_EVENT_PLAYERR__STRONG_ATTACK) {
+    } else if (event === LOG_EVENT_PLAYER_STRONG_ATTACK) {
         logEntry.target = 'MONSTER';
     } else if (event === LOG_EVENT_MONSTER_ATTACK) {
         logEntry.target = 'PLAYER';
@@ -57,6 +57,7 @@ function endRound() {
     const initialPlayerHealth = currentPlayerHealth;
     const playerDamage = dealPlayerDamage(MONSTER_ATTACK_VALUE);
     currentPlayerHealth -= playerDamage;
+    writeToLog(LOG_EVENT_MONSTER_ATTACK, playerDamage, currentMonsterHealth, currentPlayerHealth);
     if (currentPlayerHealth <= 0 && hasBonusLife) {
         hasBonusLife = false;
         currentPlayerHealth = initialPlayerHealth;
@@ -66,10 +67,13 @@ function endRound() {
 
     if (currentPlayerHealth > 0 && currentMonsterHealth <= 0) {
         window.setTimeout(window.alert, 2 * 100, "You won!");
+        writeToLog(LOG_EVENT_GAME_OVER, playerDamage, currentMonsterHealth, currentPlayerHealth)
     } else if (currentPlayerHealth <= 0 && currentMonsterHealth > 0) {
         window.setTimeout(window.alert, 2 * 100, "You Died");
+        writeToLog(LOG_EVENT_GAME_OVER, playerDamage, currentMonsterHealth, currentPlayerHealth)
     } else if (currentPlayerHealth <= 0 && currentMonsterHealth <= 0) {
         window.setTimeout(window.alert, 2 * 100, "A DRAW!");
+        writeToLog(LOG_EVENT_GAME_OVER, playerDamage, currentMonsterHealth, currentPlayerHealth)
     }
 
     if (currentPlayerHealth <= 0 || currentMonsterHealth <= 0) {
@@ -110,7 +114,11 @@ function healPlayerHandler() {
 
     endRound();
 }
+function printLogHandler() {
+    console.log(battleLog);
+}
 
 attackBtn.addEventListener("click", attackHandler);
 strongAttackBtn.addEventListener("click", strongAttackHandler);
 healBtn.addEventListener("click", healPlayerHandler);
+logBtn.addEventListener("click", printLogHandler)
