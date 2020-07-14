@@ -65,15 +65,15 @@ function endRound() {
         setPlayerHealth(initialPlayerHealth);
     }
 
-    if (currentPlayerHealth > 0 && currentMonsterHealth <= 0) {
+    if (currentPlayerHealth > 0 && currentMonsterHealth <= 0) { 
         window.setTimeout(window.alert, 2 * 100, "You won!");
-        writeToLog(LOG_EVENT_GAME_OVER, playerDamage, currentMonsterHealth, currentPlayerHealth)
+        writeToLog(LOG_EVENT_GAME_OVER, 'PLAYER WON', currentMonsterHealth, currentPlayerHealth)
     } else if (currentPlayerHealth <= 0 && currentMonsterHealth > 0) {
         window.setTimeout(window.alert, 2 * 100, "You Died");
-        writeToLog(LOG_EVENT_GAME_OVER, playerDamage, currentMonsterHealth, currentPlayerHealth)
+        writeToLog(LOG_EVENT_GAME_OVER, 'MONSTER WON', currentMonsterHealth, currentPlayerHealth)
     } else if (currentPlayerHealth <= 0 && currentMonsterHealth <= 0) {
         window.setTimeout(window.alert, 2 * 100, "A DRAW!");
-        writeToLog(LOG_EVENT_GAME_OVER, playerDamage, currentMonsterHealth, currentPlayerHealth)
+        writeToLog(LOG_EVENT_GAME_OVER, 'A DRAW', currentMonsterHealth, currentPlayerHealth)
     }
 
     if (currentPlayerHealth <= 0 || currentMonsterHealth <= 0) {
@@ -83,13 +83,17 @@ function endRound() {
 
 function attack(mode) {
     let maxDamage;
+    let logEvent;
     if (mode === MODE_ATTACK) {
         maxDamage = ATTACK_VALUE;
+        logEvent = LOG_EVENT_PLAYER_ATTACK;
     } else if (mode === MODE_STRONG_ATTACK) {
         maxDamage = STRONG_ATTACK_VALUE;
+        logEvent = LOG_EVENT_PLAYER_STRONG_ATTACK;
     }
     const damage = dealMonsterDamage(maxDamage);
     currentMonsterHealth -= damage;
+    writeToLog(logEvent, damage, currentMonsterHealth, currentPlayerHealth);
     endRound();
 }
 
@@ -111,7 +115,7 @@ function healPlayerHandler() {
     }
     increasePlayerHealth(healvalue);
     currentPlayerHealth += healvalue;
-
+    writeToLog(LOG_EVENT_PLAYER_HEAL, healvalue, currentMonsterHealth, currentPlayerHealth);
     endRound();
 }
 function printLogHandler() {
